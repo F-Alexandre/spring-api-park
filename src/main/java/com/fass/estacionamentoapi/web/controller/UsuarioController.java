@@ -44,28 +44,49 @@ public class UsuarioController {
              return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDTO(usuario1));
       }
 
-      @GetMapping("/{id}")
+
+      @GetMapping("/{id}") @Operation( summary = "Recuperar um usuario pelo id" , description = "Recupera um usuario pelo id" , responses = {
+              @ApiResponse(responseCode = "200" , description = "Recurso recuperado com sucesso", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = UsuarioResponseDTO.class))),
+              @ApiResponse(responseCode = "404" , description = "Recurso nao encontrado", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+      })
       public ResponseEntity<UsuarioResponseDTO> createId(@PathVariable Long id){
           Usuario usuario = usuarioService.buscarPorId(id);
           return ResponseEntity.ok(UsuarioMapper.toDTO(usuario));
 
       }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}") @Operation( summary = "Atualizar senha" , description = "recurso para atualizar senha" , responses = {
+            @ApiResponse(responseCode = "204" , description = "Senha atualizada com sucesso", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = UsuarioResponseDTO.class))),
+
+            @ApiResponse(responseCode = "404" , description = "Senha nao confere", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = Void.class))),
+
+            @ApiResponse(responseCode = "400" , description = "Recurso nao encontrado ", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+
+    })
     public ResponseEntity<Void> createPatch(@PathVariable Long id ,@Valid @RequestBody UsuarioSenhaDTO usuarioSenhaDTO){
         Usuario usuario1 = usuarioService.editarSenha(id,usuarioSenhaDTO.getSenhaAtual(),usuarioSenhaDTO.getNewPassword(),usuarioSenhaDTO.getConfirmPassword());
         return ResponseEntity.noContent().build();
 
     }
 
-    @GetMapping
+    @GetMapping @Operation( summary = "Recurso para listar todos os usuarios" , description = "Recurso para listar todos os usuarios" , responses = {
+            @ApiResponse(responseCode = "200" , description = "Recurso criado com sucesso", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = UsuarioResponseDTO.class))),
+            @ApiResponse(responseCode = "404" , description = "nao ha  cadastrado no sistema", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+
+        //    @ApiResponse(responseCode = "422" , description = "Recurso nao processado", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+    })
     public ResponseEntity<List<UsuarioResponseDTO>> getAll(){
         List<Usuario> usuario = usuarioService.buscarPorTodos();
         return ResponseEntity.ok(UsuarioMapper.getAllDto(usuario));
 
     }
 
-    @DeleteMapping("/{d}")
+    @DeleteMapping("/{d}") @Operation( summary = "Recurso para excluir um usuario" , description = "RRecurso para excluir um usuario" , responses = {
+            @ApiResponse(responseCode = "200" , description = "Recurso excluido com sucesso", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = UsuarioResponseDTO.class))),
+            @ApiResponse(responseCode = "404" , description = "nao ha  cadastrado no sistema", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+
+            //    @ApiResponse(responseCode = "422" , description = "Recurso nao processado", content = @Content(mediaType = "application/json" , schema = @Schema(implementation = ErrorMessage.class))),
+    })
     public void delete(@PathVariable("{id}") Long id){
        usuarioService.deleteId(id);
       }
